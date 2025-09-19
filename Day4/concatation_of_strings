@@ -1,0 +1,4 @@
+const nameOfPerson = "Nandini";
+const firstName = "siva";
+const surName = "Dasari";
+console.log(surName + " " + firstName + " " + nameOfPerson);
