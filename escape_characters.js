@@ -9,6 +9,3 @@ console.log("\\\"");
 let string = "\n";
 console.log(string.length)
 console.log("\'");
-
-
-
