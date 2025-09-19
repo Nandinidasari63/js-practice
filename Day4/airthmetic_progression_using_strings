@@ -1,0 +1,10 @@
+let total = "";
+let current = "";
+let num = ".....";
+while(current.length <= num.length){
+    
+    total = total + current ;
+    current = current + ".";
+
+}
+console.log(total,total.length,current.length)
