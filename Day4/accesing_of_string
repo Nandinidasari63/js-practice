@@ -1,0 +1,3 @@
+let x = "Nandini";
+let y = x[2];
+console.log("second letter of ",x,"is",y);
