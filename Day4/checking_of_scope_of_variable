@@ -1,0 +1,15 @@
+let x = 1;
+let n = 10;
+while(x < n){
+  
+    let x = 5;
+    x=x+1;
+    console.log("values of x,n in inside loop is",x,n);
+    if(x === 6){
+
+         break;
+
+    }
+    
+}
+console.log('values of x,n in outside loop is',x,n);
