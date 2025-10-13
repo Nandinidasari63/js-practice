@@ -28,10 +28,11 @@ function play() {
       min = 1000;
       break;
     default:
-      console.log('the number of digits limited to 4');
+      console.log('the number of digits limited to 4 or enter valid number of digit');
   }
-  let chances = 6;
-  const secretNumber = Math.floor((Math.random() * (max - min)) + min).toString()
+  let chances = 10;
+  const secretNumber = Math.floor((Math.random() * (max - min)) + min).toString();
+  console.log(secretNumber);
   console.log("start");
   findCowsBUlls(secretNumber, chances,numberOfDigits);
 }
@@ -51,46 +52,54 @@ function green(text) {
 function findCowsBUlls(secretNumber, chances,numberOfDigits) {
   const actualNum = mapNumberToArray(secretNumber);
   let number = prompt(bold('assume one four digit number in your mind and tell to me'));
-  const userEnteredNumber = mapNumberToArray(number);
-  let cowCount = 0;
-  let bullCount = 0;
-  for (let i = 0; i < actualNum.length; i++) {
-    let found = 0;
-    let notFound = 0;
-    for (let j = 0; j < userEnteredNumber.length; j++) {
-      if (actualNum[i] === userEnteredNumber[j]) {
-        if (i === j) {
-          found++;
-          bullCount++;
-        } else {
-          notFound++;
+  if(number.length === numberOfDigits){
+   const userEnteredNumber = mapNumberToArray(number);
+    let cowCount = 0;
+    let bullCount = 0;
+    for (let i = 0; i < actualNum.length; i++) {
+      let found = 0;
+      let notFound = 0;
+      for (let j = 0; j < userEnteredNumber.length; j++) {
+        if (actualNum[i] === userEnteredNumber[j]) {
+          if (i === j) {
+            found++;
+            bullCount++;
+          } else {
+            notFound++;
+          }
+        }
+      }
+      if (found === 0 && notFound >= 1) {
+        cowCount++;
+      }
+  
+    }
+    console.log(bullCount,numberOfDigits);
+    if (bullCount === numberOfDigits) {
+      console.log(green(bold('YOU WIN')));
+    } else {
+      console.log(red(bold('Cow count')), cowCount);
+      console.log(green(bold('Bull count')), bullCount);
+      chances--;
+      if (chances > 0) {
+        findCowsBUlls(secretNumber, chances,numberOfDigits);
+      }
+  
+      if (chances === 0) {
+        console.log(red(bold('you loss the game better luck next Time')));
+        console.log(secretNumber);
+        const confirmation = confirm(bold('Are you intersted to play again ?'));
+        console.log('\n');
+        if (confirmation) {
+          play();
         }
       }
     }
-    if (found === 0 && notFound >= 1) {
-      cowCount++;
-    }
-
   }
-  if (bullCount === numberOfDigits) {
-    console.log(green(bold('YOU WIN')));
-  } else {
-    console.log(red(bold('Cow count')), cowCount);
-    console.log(green(bold('Bull count')), bullCount);
-    chances--;
-    if (chances > 0) {
-      findCowsBUlls(secretNumber, chances)
-    }
+  else{
+    console.log('enter ',numberOfDigits,'digits number');
+    
 
-    if (chances === 0) {
-      console.log(red(bold('you loss the game better luck next Time')));
-      console.log(secretNumber);
-      const confirmation = confirm(bold('Are you intersted to play again ?'));
-      console.log('\n');
-      if (confirmation) {
-        play();
-      }
-    }
   }
 
 }
