@@ -33,7 +33,11 @@ function play() {
   let chances = 10;
   const secretNumber = Math.floor((Math.random() * (max - min)) + min).toString();
   console.log("start");
-  findCowsBUlls(secretNumber, chances,numberOfDigits);
+  if(secretNumber >= 0 && secretNumber <= 9999){
+    findCowsBUlls(secretNumber, chances,numberOfDigits);
+  }else{
+    console.log('enter valid digits of number')
+  }
 }
 
 function mapNumberToArray(secretNumber) {
@@ -49,7 +53,7 @@ function green(text) {
 }
 
 function repeat(secretNumber,actualNum,chances,numberOfDigits){
-  let number = prompt(bold('assume one four digit number in your mind and tell to me'));
+  let number = prompt(bold('assume one ',numberOfDigits,'digits in your mind and tell to me'));
     if(number.length === numberOfDigits){
      const userEnteredNumber = mapNumberToArray(number);
       let cowCount = 0;
@@ -72,9 +76,9 @@ function repeat(secretNumber,actualNum,chances,numberOfDigits){
         }
     
       }
-      console.log(bullCount,numberOfDigits);
       if (bullCount === numberOfDigits) {
         console.log(green(bold('YOU WIN')));
+        console.log(secretNumber);
       } else {
         console.log(red(bold('Cow count')), cowCount);
         console.log(green(bold('Bull count')), bullCount);
