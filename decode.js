@@ -47,7 +47,7 @@ function encodeToList(decodedData, output) {
     start += array[1];
     //  console.log('starting', start);
   }
-  //console.log(output)
+  console.log(output)
   return [output, start + 1];
 }
 
