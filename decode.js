@@ -21,13 +21,13 @@ function encodeToNum(decodedData) {
 
 function encodeToStr(decodedData) {
   let startIndex = decodedData.indexOf(':');
-  if (startIndex === -1) {
+  const lengthOfString = +decodedData.slice(0, startIndex);
+  if (startIndex === -1 || Number.isNaN(lengthOfString)) {
     return true;
   }
-  const lengthOfString = +decodedData.slice(0, startIndex);
-  // console.log(startIndex,lengthOfString);
-  return [decodedData.slice(startIndex + 1, startIndex + 1 + lengthOfString), startIndex + 1 + lengthOfString];
-}
+   console.log(startIndex,lengthOfString);
+     return [decodedData.slice(startIndex + 1, startIndex + 1 + lengthOfString), startIndex + 1 + lengthOfString];
+  }
 
 function encodeToList(decodedData, output) {
   let start = 1;
@@ -47,7 +47,7 @@ function encodeToList(decodedData, output) {
     start += array[1];
     //  console.log('starting', start);
   }
-  console.log(output)
+  //console.log(output)
   return [output, start + 1];
 }
 
@@ -67,3 +67,5 @@ console.log(decode('li100e5:applei700e5:nandu')[0]);
 console.log(decode("li0e0:l4:testee")[0]);
 console.log(decode("l0:i0ele")[0]);
 console.log(decode("l3:onel3:twol5:threeeee")[0]);
+console.log(decode('l3:onel3:twoei67ee')[0]);
+console.log(decode('l3:onel3:twoe5:threee')[0])
