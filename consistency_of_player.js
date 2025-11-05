@@ -36,18 +36,16 @@ function distanceBetweenMean(scores,mean){
 }
 
 function consistencyOfPlayer(scores,mean){
-  let sumOfSquares = 0;
+  let sumOfSquaresOfAbsoulteValues = 0;
   for(let index = 0;index < scores.length; index++){
-      sumOfSquares += scores[index] ** 2;
+      sumOfSquaresOfAbsoulteValues += (mean - scores[index]) ** 2;
   }
-  console.log('sumOfSquares',sumOfSquares)
-  return Math.sqrt(sumOfSquares)/scores.length
+  //console.log('sumOfSquaresOfAbsoulteValues',sumOfSquaresOfAbsoulteValues);
+  return Math.sqrt(sumOfSquaresOfAbsoulteValues)/scores.length
 }
 
 function standardDeviation(scores,mean){
-  const absoluteValues = distanceBetweenMean(scores,mean);
-  console.log(absoluteValues)
-  const standardDeviationValue = consistencyOfPlayer(absoluteValues,mean);
+  const standardDeviationValue = consistencyOfPlayer(scores,mean);
   return standardDeviationValue;
 }
 
@@ -75,6 +73,8 @@ function testCases() {
   statistics([5286,5589,7306,10449]);
   statistics([91,102,111982,245026,120144,103217,978890,152563,117376]);
   statistics([5005244,3428388,3851583,5733]);
+  statistics([0,0,100,0]);
+  statistics([0,25,50,25]);
 }
 function main() {
   testCases();
