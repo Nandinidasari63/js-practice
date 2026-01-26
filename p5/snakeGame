@@ -1,0 +1,135 @@
+// this are jumps
+let headX = 10;
+let headY = 10;
+let snake;
+let osc, env
+let cellSize, cols, rows, food;
+let direction = { x: 1, y: 0 };
+let score;
+let boxWidth = 500;
+let boxHeight = 500;
+function setup() {
+  createCanvas(700, 700);
+  osc = new p5.Oscillator('triangle');
+  env = new p5.Envelope();
+  env.setADSR(0.01, 0.1, 0, 0.05);
+  env.setRange(0.5, 0);
+  osc.start();
+  osc.amp(env);
+  cellSize = 20;
+
+  cols = boxWidth / cellSize;
+  rows = boxHeight / cellSize;
+  frameRate(6);
+  food = {
+    x: floor(random(5, cols)),
+    y: floor(random(5, rows))
+  }
+  snake = [{ headX, headY }];
+  score = 0;
+}
+
+function draw() {
+  background(220);
+
+  let isFirst = true;
+  const head = snake[0];
+  fill(220)
+  stroke('black');
+  strokeWeight(3);
+  rect(100, 100, boxWidth, boxHeight)
+  noFill();
+  for (const move of snake) {
+    stroke('black');
+    strokeWeight(1)
+    if (isFirst) {
+      const snakeWithoutHead = snake.slice(1);
+      const len = snakeWithoutHead.filter(ele => ((ele.headX === head.headX) && (ele.headY === head.headY))).length;
+      const hitsBox = collision(move);
+      if (len === 0 && hitsBox === false) {
+        square(move.headX * cellSize, move.headY * cellSize, cellSize);
+      } else {
+        playBeep(1500);
+        gameOver();
+      }
+    }
+    square(move.headX * cellSize, move.headY * cellSize, cellSize);
+    isFirst = false;
+  }
+  fill('tomato');
+  textSize(20);
+  text("Score: " + score, 550, 50);
+  noFill()
+  headX += direction.x;
+  headY += direction.y;
+  snake.unshift({ headX, headY });
+  stroke('purple');
+  strokeWeight(1);
+  square(food.x * cellSize, food.y * cellSize, cellSize);
+  noStroke();
+  if (headX === food.x && headY === food.y) {
+    playBeep(700);
+    food = {
+      x: floor(random(5, cols)),
+      y: floor(random(5, rows))
+    }
+    score++;
+  }
+  else {
+    snake.pop();
+  }
+}
+
+function keyPressed() {
+  switch (keyCode) {
+    case UP_ARROW:
+      if (!(direction.x === 0 && direction.y === 1))
+        direction = { x: 0, y: -1 };
+      break;
+
+    case DOWN_ARROW:
+      if (!(direction.x === 0 && direction.y === -1))
+        direction = { x: 0, y: 1 };
+      break;
+
+    case LEFT_ARROW:
+      if (!(direction.x === 1 && direction.y === 0))
+        direction = { x: -1, y: 0 };
+      break;
+
+    case RIGHT_ARROW:
+      if (!(direction.x === -1 && direction.y === 0))
+        direction = { x: 1, y: 0 };
+      break;
+    default:
+      break;
+  }
+}
+
+
+function playBeep(freq) {
+  osc.freq(freq);
+  env.play();
+}
+
+const gameOver = () => {
+  textSize(28);
+  fill("tomato");
+  text("GAME OVER", 300, 50);
+  text("Score: " + score, 300, 100);
+  noLoop();
+}
+
+const collision = (move) => {
+  const x = move.headX;
+  const y = move.headY;
+  const vertical = x >= 5 && x <= 30;
+  const horizontal = y >= 5 && y <= 30;
+  const verticalHits = (y === 4 && vertical) || (y === 30 && vertical);
+  const horizontalHits = (x === 4 && horizontal) || (x === 30 && horizontal);
+  if (verticalHits || horizontalHits) {
+    console.log({x,y})
+    return true;
+  }
+  return false;
+}
