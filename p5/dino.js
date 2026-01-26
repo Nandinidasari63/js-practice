@@ -4,15 +4,15 @@ let gravity;
 let ground = 300;
 let obstacle;
 
-let dinoBase;        
-let dinoImages = []; // only legs
+let dinoBase;
+let dinoImages = [];
 let cactus;
+
 let isGameOver = false;
 
 // ---------- HITBOX PADDING ----------
 const DINO_PAD_X = 15;
 const DINO_PAD_Y = 10;
-
 const CACTUS_PAD_X = 4;
 const CACTUS_PAD_Y = 4;
 
@@ -37,88 +37,124 @@ function draw() {
   background(255);
 
   if (!isGameOver) {
-    velocity.add(gravity);
-    dino.add(velocity);
+    handleInput();
+    updateDino();
+    updateObstacle();
+
+    if (checkCollision()) {
+      endGame();
+    }
   }
+
+  drawScene();
+  drawUI();
+}
+
+// ================= UPDATE LOGIC =================
+
+function handleInput() {
+  if (keyIsPressed && key === "ArrowUp" && dino.y === ground) {
+    velocity.y = -28;
+  }
+}
+
+function updateDino() {
+  velocity.add(gravity);
+  dino.add(velocity);
 
   if (dino.y > ground) {
     dino.y = ground;
     velocity.y = 0;
   }
+}
 
-  if (keyIsPressed && key === "ArrowUp" && dino.y === ground && !isGameOver) {
-    velocity.y = -28;
-  }
-
-  if (!isGameOver) {
-    obstacle.x -= 6;
-  }
+function updateObstacle() {
+  obstacle.x -= 6;
 
   if (obstacle.x < 0) {
     obstacle.x = width;
   }
+}
 
-  // ---------- DRAW GROUND ----------
+// ================= COLLISION =================
+
+function checkCollision() {
+  let dinoBox = getDinoHitbox();
+  let cactusBox = getCactusHitbox();
+
+  let horizontal = dinoBox.right > cactusBox.left &&
+                   dinoBox.left < cactusBox.right;
+
+  let vertical = dinoBox.bottom > cactusBox.top &&
+                 dinoBox.top < cactusBox.bottom;
+
+  return horizontal && vertical;
+}
+
+function getDinoHitbox() {
+  return {
+    left: dino.x + DINO_PAD_X,
+    right: dino.x + 60 - DINO_PAD_X,
+    top: dino.y - 60 + DINO_PAD_Y,
+    bottom: dino.y - DINO_PAD_Y
+  };
+}
+
+function getCactusHitbox() {
+  return {
+    left: obstacle.x + CACTUS_PAD_X,
+    right: obstacle.x + 20 - CACTUS_PAD_X,
+    top: obstacle.y - 30 + CACTUS_PAD_Y,
+    bottom: obstacle.y - CACTUS_PAD_Y
+  };
+}
+
+// ================= DRAWING =================
+
+function drawScene() {
+  drawGround();
+  drawDino();
+  drawObstacle();
+}
+
+function drawGround() {
   stroke(0);
   line(0, ground, width, ground);
+}
 
-  // ---------- DRAW DINO ----------
+function drawDino() {
+  let y = dino.y - 60;
+
+  image(dinoBase, dino.x, y, 60, 60);
+
   if (dino.y === ground && !isGameOver) {
     let index = floor(frameCount / 8) % dinoImages.length;
-    image(dinoBase, dino.x, dino.y - 60, 60, 60);
-    image(dinoImages[index], dino.x, dino.y - 60, 60, 60);
-  } else {
-    image(dinoBase, dino.x, dino.y - 60, 60, 60);
+    image(dinoImages[index], dino.x, y, 60, 60);
   }
+}
 
-  // ---------- DRAW OBSTACLE ----------
+function drawObstacle() {
   image(cactus, obstacle.x, obstacle.y - 30, 20, 30);
+}
 
-  // =================================================
-  // HITBOX CALCULATION (THIS IS THE IMPORTANT PART)
-  // =================================================
-
-  // Dino hitbox (shrunken)
-  let dinoLeft   = dino.x + DINO_PAD_X;
-  let dinoRight  = dino.x + 60 - DINO_PAD_X;
-  let dinoTop    = dino.y - 60 + DINO_PAD_Y;
-  let dinoBottom = dino.y - DINO_PAD_Y;
-
-  // Cactus hitbox (shrunken)
-  let obsLeft   = obstacle.x + CACTUS_PAD_X;
-  let obsRight  = obstacle.x + 20 - CACTUS_PAD_X;
-  let obsTop    = obstacle.y - 30 + CACTUS_PAD_Y;
-  let obsBottom = obstacle.y - CACTUS_PAD_Y;
-
-  // ---------- AABB COLLISION ----------
-  let horizontalOverlap = dinoRight > obsLeft && dinoLeft < obsRight;
-  let verticalOverlap   = dinoBottom > obsTop && dinoTop < obsBottom;
-
-  let collision = horizontalOverlap && verticalOverlap;
-
-  // ---------- SCORE ----------
+function drawUI() {
   let score = floor(frameCount / 5);
+
   fill(0);
   textSize(20);
   text("Score: " + score, 280, 30);
 
-  // ---------- DEBUG HITBOXES (OPTIONAL) ----------
-  /*
-  noFill();
-  stroke('red');
-  rect(dinoLeft, dinoTop, dinoRight - dinoLeft, dinoBottom - dinoTop);
-
-  stroke('blue');
-  rect(obsLeft, obsTop, obsRight - obsLeft, obsBottom - obsTop);
-  */
-
-  // ---------- GAME OVER ----------
-  if (collision && !isGameOver) {
-    isGameOver = true;
+  if (isGameOver) {
     textSize(28);
     fill("tomato");
     text("GAME OVER", 120, 200);
     text("Score: " + score, 130, 230);
-    noLoop();
   }
+}
+
+// ================= GAME OVER =================
+
+function endGame() {
+  isGameOver = true;
+  noLoop();
 }
